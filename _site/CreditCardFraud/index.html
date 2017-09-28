@@ -1,0 +1,633 @@
+<!-- Remove the comments to compress html
+
+---
+layout: compress
+--- 
+
+-->
+<!DOCTYPE html>
+<html>
+
+  <head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  
+<!-- Begin Jekyll SEO tag v2.1.0 -->
+<title>Optimized Approach using Machine Learning on Credit Card Fraud Dataset - Jie’s Analytics</title>
+<meta property="og:title" content="Optimized Approach using Machine Learning on Credit Card Fraud Dataset" />
+<meta name="description" content="Use performance metrics to optimize machine learning algorithm to predict fraud transactions in Kaggle Credit Card Fraud Detection." />
+<meta property="og:description" content="Use performance metrics to optimize machine learning algorithm to predict fraud transactions in Kaggle Credit Card Fraud Detection." />
+<link rel="canonical" href="http://localhost:4000/cards/CreditCardFraud/" />
+<meta property="og:url" content="http://localhost:4000/cards/CreditCardFraud/" />
+<meta property="og:site_name" content="Jie’s Analytics" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-04-09T00:00:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<script type="application/ld+json">
+{"@context": "http://schema.org",
+"@type": "BlogPosting",
+"headline": "Optimized Approach using Machine Learning on Credit Card Fraud Dataset",
+"datePublished": "2017-04-09T00:00:00-07:00",
+"description": "Use performance metrics to optimize machine learning algorithm to predict fraud transactions in Kaggle Credit Card Fraud Detection.",
+"url": "http://localhost:4000/cards/CreditCardFraud/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  
+<style>
+          
+          img{max-width:100%}.mt50{margin-top:50px}.mt20{margin-top:20px}.mt10{margin-top:10px}.navbar-brand{font-weight:900;font-size:1.85em;padding:10px}@media screen and (max-width: 600px){.navbar-brand{font-size:1.5em}}.post-meta{color:#828282}.panel{border:none;box-shadow:0px 0px 1px #828282}.panel:hover{box-shadow:0px 0px 6px #828282}footer{border-top:1px solid #e8e8e8}.social{list-style:none;display:inline;margin-left:10px;padding:5px 8px}.social:hover{opacity:0.7}.social img{width:20px}.quora img{width:17px}.facebook img{width:16px}.recent ul{list-style:none;padding:0;text-align:justify}.recent{padding:10px;border:1px solid #e8e8e8}.post-img img{width:100%}.pack{display:-webkit-inline-flex;display:-ms-inline-flexbox;display:inline-flex;flex-wrap:wrap;-webkit-flex-wrap:wrap}.card{float:none}
+
+</style>  
+
+<link rel="stylesheet" href="/cards/css/bootstrap.min.css">
+<link rel="alternate" type="application/rss+xml" title="Jie's Analytics" href="http://localhost:4000/cards/feed.xml">  
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+<nav class="navbar navbar-default navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/cards/">Jie's Analytics</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse " id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+        <li><a href="/cards/about/">About</a></li>
+        <li><a href="/cards/contact/">Contact</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More.. <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a target="_blank" href="https://github.com/jiehu567">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/hujie/">LinkedIn</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a target="_blank" href="https://profiles.udacity.com/p/10163664817">Udacity Nano Degree</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+</header>
+
+
+    <div class="container">
+      <div class="wrapper">
+        <div class="row">
+<div class="col-md-8">
+    <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+          <header class="post-header">
+            <h1 class="post-title" itemprop="name headline">Optimized Approach using Machine Learning on Credit Card Fraud Dataset</h1>
+            <p class="post-meta"><time datetime="2017-04-09T00:00:00-07:00" itemprop="datePublished">Apr 9, 2017</time></p>
+                 
+          </header>
+
+          <div class="post-content" itemprop="articleBody">
+            <p>Use performance metrics to optimize machine learning algorithm to predict fraud transactions in <a href="https://www.kaggle.com/dalpozz/creditcardfraud/kernels">Kaggle Credit Card Fraud Detection</a>.</p>
+
+<p>The goal of this research is to find out most significant features to predict whether a transaction in the dataset is committed to fraud. The structure of this article is:
+- Data Wrangling, in which I modify NA values and remove outliers
+- Feature Selecting, in which I create some features I think important to predict fraud
+- Training and tuning machine learning, in which I use sklearn to train 4 different models and compare their performance matrices, including precision, recall and f1 score, and plot ROC curves to compare the models
+- Final part, in which I select Naive Bayes as my best model
+- Conclusion</p>
+
+<h2 id="data-wrangling">1. Data Wrangling</h2>
+
+<p>Firstly, load the dataset:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"creditcard.csv"</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>(284807, 31)
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Index([u'Time', u'V1', u'V2', u'V3', u'V4', u'V5', u'V6', u'V7', u'V8', u'V9',
+       u'V10', u'V11', u'V12', u'V13', u'V14', u'V15', u'V16', u'V17', u'V18',
+       u'V19', u'V20', u'V21', u'V22', u'V23', u'V24', u'V25', u'V26', u'V27',
+       u'V28', u'Amount', u'Class'],
+      dtype='object')
+</code></pre>
+</div>
+
+<p>The total fraud and the ratio of fraud in this dataset are:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="nb">sum</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Class</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Class</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0</span><span class="o">/</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>(492, 0.00173)
+</code></pre>
+</div>
+
+<p>This dataset presents transactions that occurred in two days, where we have 492 frauds out of 284,807 transactions. The dataset is highly unbalanced, the positive class (frauds) account for 0.173% of all transactions.</p>
+
+<p>Since the dataset is processed and now there’s no NA values, so no need to clean the dataset.</p>
+
+<p>On the other hand, the dataset is processed by PCA, so I would assume all outliers, if any, would not be meaningless.</p>
+
+<h2 id="feature-selecting">2. Feature Selecting</h2>
+
+<p>Then, to begin with, I use all features and, under each algorithm I tune, use KBest to select features by their scores and compare the recall/precision rate.</p>
+
+<p>One more step before start fitting is re-scale the data by sklearn.MinMaxScaler, because some of the algorithms I will implement might require re-scale features to avoid skewed distance and biased result.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">min_max_scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">()</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">min_max_scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">data_all</span> <span class="o">=</span> <span class="n">SelectKBest</span><span class="p">(</span><span class="n">f_classif</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="s">'all'</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span><span class="n">labels</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># fit_transform(X, y)</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+<span class="n">scores</span> <span class="o">=</span> <span class="n">data_all</span><span class="o">.</span><span class="n">scores_</span>
+<span class="n">score_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="n">score_dict</span><span class="p">[</span><span class="n">features_list</span><span class="p">[</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">sorted_score_dict</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">score_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+</code></pre>
+</div>
+
+<p>Then I plot the features sorted by their scores:</p>
+
+<p><img src="output_17_0.png" alt="png" /></p>
+
+<p>From the plot, it seems 7 is a great cut-off to select features because more than 7 features will not have high score. However, here I will keep this plot as a reference, I will explore more about how the recall rate and precision rate will be changed and then compare all these plot to select best combination.</p>
+
+<h2 id="training-and-tuning-machine-learning">3. Training and Tuning Machine Learning</h2>
+
+<p>Before training, I will use validation to see how algorithms generalized to the overall data outside training data. Without validation, there’s pretty high risk of overfitting.</p>
+
+<p>After that, I run each model independently and tune for the best performance of each type of model.</p>
+
+<h3 id="about-tuning-models">3.1 About Tuning Models</h3>
+
+<p>It’s very important to tune the model, not only because each model, there might be a lot of combination of parameters and hence make big influence on performance of our model, but also, we can have better chance to see how model can better match the data in an optimization process.</p>
+
+<p>Without tuning the model, we might save a lot of time and get a good result, but there’s always a question “can we do better” over the head. And if the model get bad prediction when there’s new data coming, we even don’t know where the problem is. So tune the model might cost sometime, but it did save time in future for further exploration and better improved the performance and robustness of model.</p>
+
+<h3 id="naive-bayes">3.2 Naive Bayes</h3>
+
+<p>Similarly, I tune the model for each K from 1 to 25, and plot the performance matrices:</p>
+
+<p><img src="output_26_0.png" alt="png" /></p>
+
+<p>The accuracy is an average score to show how much percentage we get the right prediction. As it’s not suitable for skewed features, here I add precision and recall matrices to evaluate.</p>
+
+<p>Precision is how much probability we get a sample with true if it’s tested positive. By bayes prior and post probability:</p>
+
+<script type="math/tex; mode=display">Precision = P(T | +) = \frac{P(+|T)}{P(+|T)+P(+|F)}</script>
+
+<p>In other words, precision is a measure of result relevancy, while recall is a measure of how many truly relevant results are returned:</p>
+
+<script type="math/tex; mode=display">Recall = \frac{P(+|T)}{P(+|T)+P(-|T)}</script>
+
+<ul>
+  <li>Higher precission means, with transaction identified as fraud by this model, we have higher correct rate</li>
+  <li>Higher recall means, if the transaction is fraud, then we have higher chance to identify correctly</li>
+</ul>
+
+<p>Here we can see:</p>
+
+<p>The higher recall might make precision lower, which causes a lot of non-fraud transactions to be commited fraud. So I will keep a balance here and select K = 4</p>
+
+<p>Now test in test set:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Accuracy: 1.00
+Precision: 0.57
+Recall   : 0.58
+F1 score:  0.57
+</code></pre>
+</div>
+
+<p>ROC Curve</p>
+
+<p><img src="output_32_0.png" alt="png" /></p>
+
+<p>Problems of models:
+Assumption of independence between transactions is not necessarily meet.</p>
+
+<h3 id="decision-tree">3.3 Decision Tree</h3>
+
+<p>The process is similar, but here we should set the parameters of Decision Tree and use GridSearch and visualization to get the best performance.</p>
+
+<p><img src="output_36_0.png" alt="png" /></p>
+
+<p>From the plot we can see the model reach optimal when K = 24. 
+Here I use this to train and tune the Decision Tree model again to find the best combination of parameters:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Accuracy: 1.00
+Precision: 0.86
+Recall   : 0.76
+F1 score:  0.80
+</code></pre>
+</div>
+
+<p>And the best parameters are:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">grid_search</span><span class="o">.</span><span class="n">best_estimator_</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>DecisionTreeClassifier(class_weight=None,
+                        criterion='entropy',
+                        max_depth=3,
+                        max_features=None,
+                        max_leaf_nodes=None,
+                        min_impurity_split=1e-07,
+                        min_samples_leaf=1,
+                        min_samples_split=2,
+                        min_weight_fraction_leaf=0.0,
+                        presort=False,
+                        random_state=None,
+                        splitter='best')
+</code></pre>
+</div>
+
+<p>Here we care Recall and Precision the most because we want our model to increase probability to correct identify fraud with the transactions which are truely fraud and probability to get right fraud identification when we have positive test result. Thus, K = 27 will be a better choice.</p>
+
+<p>And ROC curve:</p>
+
+<p><img src="output_42_0.png" alt="png" /></p>
+
+<p><img src="output_43_0.png" alt="png" /></p>
+
+<h3 id="support-vector-machine">3.4 Support Vector Machine</h3>
+
+<p>The 3rd type of model I want to use is SVM, because we have multi-dimensional dataset and big dataset. SVM’s hyper-plane have its advantages when we have enough features to train the model.</p>
+
+<p><img src="output_46_0.png" alt="png" /></p>
+
+<p>For SVM, we reach optimal at K = 21. Because F1 score, which is used to balance the precision and recall reaches optimal when k is 21.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Accuracy: 1.00
+Precision: 0.89
+Recall   : 0.77
+F1 score:  0.83
+</code></pre>
+</div>
+
+<p>The best parameters are:</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">grid_search</span><span class="o">.</span><span class="n">best_estimator_</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>SVC(C=100,
+    cache_size=200,
+    class_weight=None,
+    coef0=0.0,
+    decision_function_shape=None,
+    degree=3,
+    gamma=0.001,
+    kernel='rbf',
+    max_iter=-1,
+    probability=False,
+    random_state=None,
+    shrinking=True,
+    tol=0.001,
+    verbose=False)
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># ROC Curve, probability in SVC should be set to True to enable proba method</span>
+<span class="n">clf</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s">'rbf'</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">y_score</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_svm_train</span><span class="p">,</span>
+                <span class="n">labels_svm_train</span><span class="p">)</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">features_svm_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">fpr_rf_svm</span><span class="p">,</span> <span class="n">tpr_rf_svm</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">roc_curve</span><span class="p">(</span><span class="n">labels_svm_test</span><span class="p">,</span> <span class="n">y_score</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s">'k--'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fpr_rf_svm</span><span class="p">,</span> <span class="n">tpr_rf_svm</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">'RF + LR'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'False positive rate'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'True positive rate'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'ROC curve'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p><img src="output_51_0.png" alt="png" /></p>
+
+<p>SVM model does have the best ROC curve among the 3 types of models we tried.</p>
+
+<h3 id="adaboost-based-on-decision-tree">3.5 Adaboost (Based on Decision Tree)</h3>
+
+<p><img src="output_55_0.png" alt="png" /></p>
+
+<p>It seems the more features, the better adaboost will perform. Here we can see when K= 27, we reach optimal.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Accuracy: 1.00
+Precision: 0.85
+Recall   : 0.71
+F1 score:  0.77
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">grid_search</span><span class="o">.</span><span class="n">best_estimator_</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>AdaBoostClassifier(algorithm='SAMME.R',
+                   base_estimator=None,
+                   learning_rate=1.0,
+                   n_estimators=50,
+                   random_state=None)
+</code></pre>
+</div>
+
+<p><img src="output_59_0.png" alt="png" /></p>
+
+<h1 id="logistic-regression">Logistic Regression</h1>
+
+<p><img src="output_61_0.png" alt="png" /></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Accuracy: 1.00
+Precision: 0.89
+Recall   : 0.56
+F1 score:  0.69
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">grid_search</span><span class="o">.</span><span class="n">best_estimator_</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>LogisticRegression(C=1.0,
+          class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100,
+          multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None,
+          solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)
+</code></pre>
+</div>
+
+<p><img src="output_64_0.png" alt="png" /></p>
+
+<h2 id="discussion">4. Discussion</h2>
+
+<p>Now let’s put together and select the best model and feature list.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Score Type</th>
+      <th>Naive Bayes</th>
+      <th>Decision Tree</th>
+      <th>SVM</th>
+      <th>Adaboost</th>
+      <th>Logistic Regression</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Num of features</td>
+      <td>4</td>
+      <td>24</td>
+      <td>23</td>
+      <td>27</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>Accuracy</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Precision</td>
+      <td>0.57</td>
+      <td>0.86</td>
+      <td>0.89</td>
+      <td>0.85</td>
+      <td>0.89</td>
+    </tr>
+    <tr>
+      <td>Recall</td>
+      <td>0.58</td>
+      <td>0.76</td>
+      <td>0.77</td>
+      <td>0.71</td>
+      <td>0.56</td>
+    </tr>
+    <tr>
+      <td>F1 score</td>
+      <td>0.57</td>
+      <td>0.80</td>
+      <td>0.83</td>
+      <td>0.77</td>
+      <td>0.69</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Recall the ROC curves:</p>
+
+<p><img src="output_66_0.png" alt="png" /></p>
+
+<p>I notice best model for out of sample test here is when K = 21, we use SVM with parameters:</p>
+
+<p>SVC(C=100, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape=None, degree=3, gamma=0.0001, kernel=’rbf’,
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False)</p>
+
+<p>The best performance in testing set is:</p>
+
+<p>Precision: 0.841823
+Recall: 0.796954
+Accuracy: 0.999390
+F1 Score: 0.818774</p>
+
+<h4 id="combined-classifier">Combined Classifier</h4>
+
+<p>How about if I use 3 of the best classifiers here?</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Accuracy: 1.00
+Precision: 0.89
+Recall   : 0.77
+F1 score:  0.83
+</code></pre>
+</div>
+
+<p>Which is actually what we achieved by SVM.</p>
+
+<h2 id="conclusion">5. Conclusion</h2>
+
+<p>In this report I firstly summarize the dataset, use visualization to find out interesting correlations among fraud and other features. Then I train 3 different models, and finally find SVM as my best model and number of features K = 21.</p>
+
+<p>This is a quantative analysis and can only be a reference for commitment. The real procedure of fraud commitment is quite complex.</p>
+
+<p>In future, to improve the accuracy of the model, I think there’re some ways we can try:</p>
+
+<ul>
+  <li>Given more detailed dataset, more features might have risk of overfitting, but more data can possibly provide more informaiton we need</li>
+  <li>Given more data with fraud so it will be easier to catch up with more significant predictors.</li>
+</ul>
+
+          </div>
+
+    </article>
+    <div class="row">
+        
+         <div id="disqus_thread"></div>
+<script defer>
+(function() {
+    var d = document, s = d.createElement('script');
+    s.src = '//webjeda-demo.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                              
+        
+    </div>
+    
+    
+    <div class="row">
+            <ul class="pager">
+             
+                    <li><a class="next" href="/cards/FIFA/">&laquo; Soccer in EU, Home matters!</a></li>
+              
+              
+                <li><a class="previous" href="/cards/OpenStreetDW/">Open Street Map Data Wrangling with MongoDB &raquo;</a></li>
+              
+            </ul>
+    </div>
+</div>
+
+
+<div class="col-md-4 mt20">
+        <div class="post-img">
+           
+            <img width="600" src="/cards/images/fraud.png" alt="Optimized Approach using Machine Learning on Credit Card Fraud Dataset">
+            
+        </div>
+            
+        
+        <div class="mt10 recent">
+            <h2>Recent articles</h2>        
+             <ul>
+                
+
+                      <li>
+                      <p><a href="/cards/FIFA/">Soccer in EU, Home matters!</a><small>&nbsp;&nbsp;10 Apr 2017</small></p>
+                      </li>
+
+                
+
+                      <li>
+                      <p><a href="/cards/OpenStreetDW/">Open Street Map Data Wrangling with MongoDB</a><small>&nbsp;&nbsp;13 Mar 2017</small></p>
+                      </li>
+
+                
+
+                      <li>
+                      <p><a href="/cards/RedWineQuality/">EDA: Red Wine Quality</a><small>&nbsp;&nbsp;12 Jun 2016</small></p>
+                      </li>
+
+                
+              </ul>
+        </div>
+
+</div>
+
+</div>
+
+    <script>
+    (function() {
+        var font3 = document.createElement('link'); 
+        font3.type = 'text/css'; 
+        font3.rel = 'stylesheet';
+        font3.href = '/cards/css/syntax-highlighting.css';
+        var q = document.getElementsByTagName('link')[0]; 
+        q.parentNode.insertBefore(font3, q);
+      })();
+</script>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6&appId=1047320212005262";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+      </div>
+    </div>
+
+    
+  <footer class="container">
+
+  <div class="row mt20">
+  
+  <div class="col-md-4 text-center">Feel free to contact <a target="_blank" href="mailto:jie.hu.ds@gmail.com">me</a></div>
+    
+    
+
+  <div class="col-md-4 text-center">
+     <a target="_blank" href="http://facebook.com/julio.justice000"><li class="social facebook"><img src="/cards/images/facebook.svg" alt="http://facebook.com/julio.justice000"></li></a> 
+      <a target="_blank" href="http://twitter.com/@Jie000000"><li class="social twitter"><img src="/cards/images/twitter.svg" alt="http://twitter.com/@Jie000000"></li></a>
+      <a target="_blank" href="http://github.com/jiehu567"><li class="social github"><img src="/cards/images/github.svg" alt="http://github.com/jiehu567"></li></a>
+  </div>
+  
+  </div> 
+
+</footer>
+
+    
+<script async>
+    (function() {
+        var font = document.createElement('link'); 
+        font.type = 'text/css'; 
+        font.rel = 'stylesheet';
+        font.href = '//fonts.googleapis.com/css?family=Raleway:400,700';
+        var s = document.getElementsByTagName('link')[0]; 
+        s.parentNode.insertBefore(font, s);
+      })();
+</script>
+    
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="/cards/js/bootstrap.min.js"></script>
+  <!-- Google Analytics Tracking code -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-83979019-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+
+</html>
