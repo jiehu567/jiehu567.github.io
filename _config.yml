@@ -1,0 +1,58 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+title: Jie's Analytics
+email: jie.hu.ds@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+  Jie's Analytics Blog, for Data Science Learning and Projects
+  
+  
+  
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://guide-tapir-87510.netlify.com/" # the base hostname & protocol for your site
+# url: "http://jiehu567.github.io/" # the base hostname & protocol for your site
+
+#sidebar
+default-image: webjeda-logo-big.jpg # If there is no featured image in a post then this image will be showed. Also on all pages this image will be showed. Use a 500x250 image.
+
+#footer
+built-by: Jie
+copyright:
+   name: Jie
+   link: 'mailto:jie.hu.ds@gmail.com'
+
+# Build settings
+markdown: kramdown
+permalink: /:title/
+paginate: 6
+paginate_path: /page:num/
+
+# Tracker
+analytics: UA-83979019-1
+
+# Comments
+disqus-shortname: webjeda-demo
+
+#social
+facebook: http://facebook.com/julio.justice000
+# quora: http://quora.com/sharathdt
+twitter: http://twitter.com/@Jie000000
+github: http://github.com/jiehu567
+
+#facebook like box
+fb-app-id: 1047320212005262
+fb-page-url: https://www.facebook.com/julio.justice000/
+fb-page-title: julio.justice000
+
+# Sass style
+sass:
+  style: compressed
+
+# Ruby Gems
+gems: [jekyll-paginate, jekyll-seo-tag]
+
