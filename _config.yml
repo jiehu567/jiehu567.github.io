@@ -13,7 +13,7 @@ description: > # this means to ignore newlines until "baseurl:"
   
   
   
-baseurl: "/cards" # the subpath of your site, e.g. /blog
+baseurl: "jiehu567.github.io/cards" # the subpath of your site, e.g. /blog
 url: "http://jie-analytics.com/" # the base hostname & protocol for your site
 
 #sidebar
